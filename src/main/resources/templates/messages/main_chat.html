@@ -2,9 +2,34 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
   <div th:fragment="main_chat">
     <div class="main_chat">
-      <div class="main_chat_header"></div>
-      <div class="main_chat_body"></div>
-      <div class="main_chat_footer"></div>
+      <div class="main_chat_header">
+        <div class="about-chat-room">hogehuga</div>
+        <a href="#" class="exit-chat">チャットを終了する</a>
+      </div>
+      <div class="main_chat_body">
+        <div class="message-container">
+          <div class="message">
+            <div class="message-sender">Tom</div>
+            <div class="when">2020/3/31(Wed) 12:43:40</div>
+          </div>
+          <div class="message-text">こんにちは!</div>
+        </div>
+        <div class="message-container">
+          <div class="message">
+            <div class="message-sender">Jerry</div>
+            <div class="when">2020/3/31(Wed) 12:45:40</div>
+          </div>
+          <div class="message-text">元気ですか？</div>
+        </div>
+      </div>
+      <form class="main_chat_footer" action="#" method="post">
+        <input type="text" class="message-input" placeholder="type a message" />
+        <label class="form-image">
+          <span class="image-file">画像</span>
+          <input type="file" class="hidden" />
+        </label>
+        <input type="submit" class="send-message" value="送信" />
+      </form>
     </div>
   </div>
 </html>
