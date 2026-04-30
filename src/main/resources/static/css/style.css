@@ -24,6 +24,7 @@
 .name {
   color: #fff;
   font-size: 16px;
+  text-decoration: none;
 }
 
 .make-chat {
@@ -47,6 +48,7 @@
   color: white;
   font-size: 16px;
   margin: 20px 20px 40px 20px;
+  text-decoration: none;
 }
 
 .main_chat {

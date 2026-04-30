@@ -1,14 +1,17 @@
 package in.tech_camp.chat_app.controller; // このファイルがどのフォルダ（パッケージ）に属しているかを宣言します
 
-// 必要なクラスやSpring Bootの便利機能をインポート（取り込み）します
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import in.tech_camp.chat_app.custom_user.CustomUserDetail;
 import in.tech_camp.chat_app.entity.UserEntity;
+import in.tech_camp.chat_app.form.EditForm;
 import in.tech_camp.chat_app.form.LoginForm;
 import in.tech_camp.chat_app.form.UserForm;
 import in.tech_camp.chat_app.repository.UserRepository;
@@ -86,5 +89,37 @@ public class UserController {
         }
         return "users/login";
     }
-}
+    @GetMapping("/users/{userId}/edit")
+    public String showEdit(@PathVariable("userId") Integer userId, Model model) {
+        UserEntity user = userRepository.findById(userId);
+        EditForm editForm = new EditForm();
+        editForm.setId(user.getId());
+        editForm.setUsername(user.getUsername());
+        editForm.setUserEmail(user.getUserEmail());
+        model.addAttribute("user", editForm);
+        return "users/edit";
+    } 
+      @PostMapping("/users/{userId}")
+    public String updateUser(@PathVariable("userId") Integer userId, @ModelAttribute("user") EditForm editForm, Model model) {
+      UserEntity user = userRepository.findById(userId);
+      user.setUsername(editForm.getUsername());
+      user.setUserEmail(editForm.getUserEmail());
+  
+      try {
+        userRepository.update(user);
+      } catch (Exception e) {
+        System.out.println("エラー：" + e);
+        model.addAttribute("user", editForm);
+        return "users/edit";
+      }
+      return "redirect:/";
+    }
 
+    @GetMapping("/")
+    public String showMessages(@AuthenticationPrincipal CustomUserDetail currentUser, Model model) {
+        UserEntity user = userRepository.findById(currentUser.getId());
+        model.addAttribute("user", user);
+        return "messages/index";
+    }
+    
+}

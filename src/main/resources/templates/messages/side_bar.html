@@ -3,21 +3,27 @@
   <div th:fragment="side_bar">
     <div class="side_bar">
       <div class="side_bar_header">
-        <div class="name">Tom</div>
-        <a href="#" class="make-chat">チャットを作成する</a>
+        <a
+          th:href="@{/users/{userId}/edit(userId=${user.getId()})}"
+          class="name"
+          th:text="${user.getUsername()}"
+          >ユーザ名
+        </a>
+         <div class="chat-room-name">
+          <a href="#" チャットを作成する></a>
+          </a>
+        </div>
       </div>
       <div class="side_bar_body">
-        <div class="chat-room-name">techroom1</div>
-        <div class="chat-room-name">techroom2</div>
-        <div class="chat-room-name">techroom3</div>
-        <div class="chat-room-name">techroom4</div>
-        <div class="chat-room-name">techroom5</div>
-        <div class="chat-room-name">techroom6</div>
-        <div class="chat-room-name">techroom7</div>
-        <div class="chat-room-name">techroom8</div>
-        <div class="chat-room-name">techroom9</div>
-        <div class="chat-room-name">techroom10</div>
-        <div class="chat-room-name">techroom11</div>
+        <div class="chat-room-name">
+          <a href="#">techroom1</a>
+        </div>
+        <div class="chat-room-name">
+          <a href="#">techroom2</a>
+        </div>
+        <div class="chat-room-name">
+          <a href="#">techroom3</a>
+        </div>
       </div>
     </div>
   </div>

@@ -42,7 +42,7 @@ public class CustomUserDetail implements UserDetails { // Spring Security専用�
     // --- ここから下は独自のメソッド（必須ではないが、後で名前やIDを取り出したい時に便利） ---
 
     // ユーザーのIDを取り出すメソッド（あなたのEntityに合わせてLong型に修正しています）
-    public Long getId() {
+    public Integer getId() {
         return user.getId();
     }
 

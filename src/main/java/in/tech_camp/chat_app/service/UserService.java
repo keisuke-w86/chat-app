@@ -36,4 +36,5 @@ public class UserService {
         // パスワード暗号化の道具（passwordEncoder）を使って、生の文字列をハッシュ化して返します
         return passwordEncoder.encode(password);
     }
+    
 }
