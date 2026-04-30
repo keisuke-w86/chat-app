@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import in.tech_camp.chat_app.entity.UserEntity;
 import in.tech_camp.chat_app.form.LoginForm;
@@ -78,5 +79,12 @@ public class UserController {
         return "users/login";
     }
     
+    @GetMapping("/login")
+    public String login(@RequestParam(value= "error", required=false) String error, @ModelAttribute("loginForm") LoginForm loginForm, Model model) {
+        if (error != null) {
+            model.addAttribute("loginError", "メールアドレスかパスワードが違います");
+        }
+        return "users/login";
+    }
 }
 
