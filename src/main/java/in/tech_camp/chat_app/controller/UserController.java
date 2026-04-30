@@ -1,8 +1,14 @@
 package in.tech_camp.chat_app.controller; // このファイルがどのフォルダ（パッケージ）に属しているかを宣言します
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +22,7 @@ import in.tech_camp.chat_app.form.LoginForm;
 import in.tech_camp.chat_app.form.UserForm;
 import in.tech_camp.chat_app.repository.UserRepository;
 import in.tech_camp.chat_app.service.UserService;
+import in.tech_camp.chat_app.validation.ValidationOrder;
 import lombok.AllArgsConstructor;
 
 
@@ -38,43 +45,39 @@ public class UserController {
         return "users/signUp";
     }
 
-    @PostMapping("/user") // 画面から「/user」宛てにデータが送信（POSTリクエスト）されてきた時に動くメソッドです
-    public String createUser(@ModelAttribute("userForm") UserForm userForm, Model model) { 
-        // 飛んできたデータを「受付用紙（userForm）」に書き込まれた状態で受け取り、同時に「段ボール箱（model）」も用意します
-
-        // データベースの金庫に入れるための箱（UserEntity）を新しく作ります
-        UserEntity userEntity = new UserEntity();
-        
-        // 【⚠️注意】あなたのコードに合わせて getUsername() / getUserEmail() などに書き換えてください！
-        // 受付用紙（Form）に書かれた名前を取り出して、金庫の箱（Entity）にセットします
-        userEntity.setUsername(userForm.getUsername());
-        
-        // 受付用紙に書かれたメールアドレスを取り出して、金庫の箱にセットします
-        userEntity.setUserEmail(userForm.getUserEmail());
-        
-        // 受付用紙に書かれたパスワードを取り出して、金庫の箱にセットします
-        userEntity.setPassword(userForm.getPassword());
-
-        try { // エラーが起きるかもしれない「データベースへの保存」の処理を try { } で囲んで監視します
-            
-            // 専門の作業員（userService）に、金庫の箱（userEntity）をデータベースへ保存（insert）するようにお願いします
-            userService.createUserWithEncryptedPassword(userEntity);
-            
-        } catch (Exception e) { // もし保存中に何らかのエラー（Exception）が起きたら、ここでキャッチします
-            
-            // 開発者が原因を特定できるように、ターミナル（黒い画面）にエラーの内容を表示します
-            System.out.println("エラー：" + e);
-            
-            // エラーになってしまったので、ユーザーが入力した内容が残ったままの受付用紙を、もう一度段ボール箱に入れます
-            model.addAttribute("userForm", userForm);
-            
-            // 再度、新規登録画面（signUp.html）を表示して、入力をやり直してもらいます
-            return "users/signUp";
-        }
-
-        // 無事にデータベースへの保存が終わったら、トップページ（/）へ強制移動（リダイレクト）するように指示します
-        return "redirect:/";
+        @PostMapping("/user")
+    public String createUser(@ModelAttribute("userForm") @Validated(ValidationOrder.class) UserForm userForm, BindingResult result, Model model) {
+      userForm.validatePasswordConfirmation(result);
+      if (userRepository.existsByEmail(userForm.getUserEmail())) {
+        result.rejectValue("userEmail", "null", "Email already exists");
+      }
+  
+      if (result.hasErrors()) {
+        List<String> errorMessages = result.getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+  
+        model.addAttribute("errorMessages", errorMessages);
+        model.addAttribute("userForm", userForm);
+        return "users/signUp";
+      }
+  
+      UserEntity userEntity = new UserEntity();
+      userEntity.setUsername(userForm.getUsername());
+      userEntity.setUserEmail(userForm.getUserEmail());
+      userEntity.setPassword(userForm.getPassword());
+  
+      try {
+        userService.createUserWithEncryptedPassword(userEntity);
+      } catch (Exception e) {
+        System.out.println("エラー：" + e);
+        model.addAttribute("userForm", userForm);
+        return "users/signUp";
+      }
+  
+      return "redirect:/";
     }
+
 
     @GetMapping("/users/login")
     public String showLogin(Model model) {
@@ -99,8 +102,21 @@ public class UserController {
         model.addAttribute("user", editForm);
         return "users/edit";
     } 
-      @PostMapping("/users/{userId}")
-    public String updateUser(@PathVariable("userId") Integer userId, @ModelAttribute("user") EditForm editForm, Model model) {
+         @PostMapping("/users/{userId}")
+    public String updateUser(@PathVariable("userId") Integer userId, @ModelAttribute("user") @Validated(ValidationOrder.class) EditForm editForm, BindingResult result, Model model) {
+      String newEmail = editForm.getUserEmail();
+      if (userRepository.existsByEmailExcludingCurrent(newEmail, userId)) {
+        result.rejectValue("userEmail", "error.user", "Email already exists");
+      }
+      if (result.hasErrors()) {
+        List<String> errorMessages = result.getAllErrors().stream()
+                                      .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                                      .collect(Collectors.toList());
+        model.addAttribute("errorMessages", errorMessages);
+        model.addAttribute("user", editForm);
+        return "users/edit";
+      }
+      
       UserEntity user = userRepository.findById(userId);
       user.setUsername(editForm.getUsername());
       user.setUserEmail(editForm.getUserEmail());
@@ -112,6 +128,7 @@ public class UserController {
         model.addAttribute("user", editForm);
         return "users/edit";
       }
+  
       return "redirect:/";
     }
 
