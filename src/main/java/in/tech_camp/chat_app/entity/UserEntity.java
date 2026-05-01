@@ -1,5 +1,7 @@
 package in.tech_camp.chat_app.entity;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -8,5 +10,6 @@ public class UserEntity {
     private String username;
     private String userEmail;
     private String password;
+    private List<RoomUserEntity> roomUsers;
     
 }
