@@ -16,16 +16,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import in.tech_camp.chat_app.custom_user.CustomUserDetail;
+import in.tech_camp.chat_app.entity.RoomEntity;
+import in.tech_camp.chat_app.entity.RoomUserEntity;
 import in.tech_camp.chat_app.entity.UserEntity;
 import in.tech_camp.chat_app.form.EditForm;
 import in.tech_camp.chat_app.form.LoginForm;
 import in.tech_camp.chat_app.form.UserForm;
+import in.tech_camp.chat_app.repository.RoomUserRepository;
 import in.tech_camp.chat_app.repository.UserRepository;
 import in.tech_camp.chat_app.service.UserService;
 import in.tech_camp.chat_app.validation.ValidationOrder;
 import lombok.AllArgsConstructor;
-
-
 @Controller // このクラスがブラウザからのリクエストを受け付ける「受付窓口（コントローラー）」であることを宣言します
 @AllArgsConstructor // Lombokの機能で、下にある「final」がついた変数の初期設定（コンストラクタ）を全自動で作ってくれます
 public class UserController {
@@ -34,6 +35,7 @@ public class UserController {
     private final UserRepository userRepository;
 // ★新しく作った専門職人（UserService）を呼び出せるように準備します
     private final UserService userService;
+     private final RoomUserRepository roomUserRepository;
     
     @GetMapping("/users/sign_up") // ブラウザから「/users/sign_up」にアクセス（GETリクエスト）が来た時に動くメソッドです
     public String showSignUp(Model model){ // Modelは、画面（HTML）へデータを運ぶための「段ボール箱」です
@@ -132,11 +134,17 @@ public class UserController {
       return "redirect:/";
     }
 
+
     @GetMapping("/")
-    public String showMessages(@AuthenticationPrincipal CustomUserDetail currentUser, Model model) {
+        public String index(@AuthenticationPrincipal CustomUserDetail currentUser, Model model) {
         UserEntity user = userRepository.findById(currentUser.getId());
         model.addAttribute("user", user);
-        return "messages/index";
-    }
+        List<RoomUserEntity> roomUserEntities = roomUserRepository.findByUserId(currentUser.getId());
+        List<RoomEntity> roomList = roomUserEntities.stream()
+            .map(RoomUserEntity::getRoom)
+            .collect(Collectors.toList());
+        model.addAttribute("rooms", roomList);
+        return "rooms/index";
+        }
     
 }

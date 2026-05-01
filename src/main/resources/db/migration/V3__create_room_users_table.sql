@@ -1,5 +1,5 @@
 CREATE TABLE room_users (
-    id SERIAL PRIMARY KEY,
+    id SERIAL NOT NULL,
     room_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     PRIMARY KEY (id),

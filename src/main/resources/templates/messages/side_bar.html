@@ -10,14 +10,14 @@
           >ユーザ名
         </a>
          <div class="chat-room-name">
-          <a href="#" チャットを作成する></a>
+          <a href="@{/rooms/new}" チャットを作成する></a>
           </a>
         </div>
       </div>
       <div class="side_bar_body">
         <div th:each="room : ${rooms}" class="room">
           <div class="chat-room-name">
-            <a href="#" th:text=${room.name}>techroom</a>
+            <a href="@{/rooms/{room.id}/messages(roomId=${room.id})}" th:text=${room.name}>techroom</a>
           </div>
         </div>
       </div>
