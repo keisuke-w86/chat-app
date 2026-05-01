@@ -15,14 +15,10 @@
         </div>
       </div>
       <div class="side_bar_body">
-        <div class="chat-room-name">
-          <a href="#">techroom1</a>
-        </div>
-        <div class="chat-room-name">
-          <a href="#">techroom2</a>
-        </div>
-        <div class="chat-room-name">
-          <a href="#">techroom3</a>
+        <div th:each="room : ${rooms}" class="room">
+          <div class="chat-room-name">
+            <a href="#" th:text=${room.name}>techroom</a>
+          </div>
         </div>
       </div>
     </div>
