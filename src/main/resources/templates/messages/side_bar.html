@@ -9,15 +9,17 @@
           th:text="${user.getUsername()}"
           >ユーザ名
         </a>
-         <div class="chat-room-name">
-          <a href="@{/rooms/new}" チャットを作成する></a>
-          </a>
+        <div class="chat-room-name">
+          <a th:href="@{/rooms/new}" class="make-chat">チャットを作成する</a>
         </div>
       </div>
       <div class="side_bar_body">
         <div th:each="room : ${rooms}" class="room">
           <div class="chat-room-name">
-            <a href="@{/rooms/{room.id}/messages(roomId=${room.id})}" th:text=${room.name}>techroom</a>
+            <a
+              th:href="@{/rooms/{roomId}/messages(roomId=${room.id})}"
+              th:text="${room.name}"
+            ></a>
           </div>
         </div>
       </div>

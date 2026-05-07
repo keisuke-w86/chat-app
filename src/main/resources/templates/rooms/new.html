@@ -48,7 +48,7 @@
               <option value="">チャットするユーザーを選択してください</option>
               <option
                 th:each="user : ${users}"
-                th:text="${user.name}"
+                th:text="${user.username}"
                 th:value="${user.id}"
               ></option>
             </select>

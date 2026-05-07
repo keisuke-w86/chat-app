@@ -37,7 +37,7 @@ public class UserController {
     private final UserService userService;
      private final RoomUserRepository roomUserRepository;
     
-    @GetMapping("/users/sign_up") // ブラウザから「/users/sign_up」にアクセス（GETリクエスト）が来た時に動くメソッドです
+    @GetMapping("/users/signUp") // ブラウザから「/users/sign_up」にアクセス（GETリクエスト）が来た時に動くメソッドです
     public String showSignUp(Model model){ // Modelは、画面（HTML）へデータを運ぶための「段ボール箱」です
         
         // 段ボール箱に、新しく作った空っぽの「受付用紙（UserForm）」を「userForm」という名札をつけて入れます
@@ -144,7 +144,7 @@ public class UserController {
             .map(RoomUserEntity::getRoom)
             .collect(Collectors.toList());
         model.addAttribute("rooms", roomList);
-        return "rooms/index";
+        return "messages/index";
         }
     
 }

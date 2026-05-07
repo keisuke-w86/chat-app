@@ -3,7 +3,7 @@
   <div th:fragment="main_chat">
     <div class="main_chat">
       <div class="main_chat_header">
-        <div class="about-chat-room">hogehuga</div>
+        <div class="about-chat-room" th:text="${room.name}"></div>
         <a href="#" class="exit-chat">チャットを終了する</a>
       </div>
 
@@ -11,22 +11,30 @@
         <div class="message-container" th:each="message : ${messages}">
           <div class="message">
             <div class="message-sender" th:text="${message.user.username}">
+              ユーザ名
             </div>
             <div
               class="when"
-              th:text="${#dates.format(message.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></div>
-            </div>
+              th:text="${#dates.format(message.createdAt, 'yyyy/MM/dd HH:mm:ss')}"
+            ></div>
           </div>
           <div class="message-text" th:text="${message.content}">
+            メッセージ内容
           </div>
+          <img
+            th:src="@{${message.image}}"
+            alt="メッセージ画像"
+            style="width: 500px; height: 500px"
+          />
         </div>
       </div>
 
       <form
-        th:action="@{/rooms/{roomId}/messages(roomId=${roomId})}"
+        th:action="@{/rooms/{roomId}/messages(roomId=${room.id})}"
         method="post"
         th:object="${messageForm}"
         class="form"
+        enctype="multipart/form-data"
       >
         <input
           type="text"
@@ -37,7 +45,7 @@
 
         <label class="form-image">
           <span class="image-file">画像</span>
-          <input type="file" class="hidden" />
+          <input type="file" class="hidden" th:field="*{image}" />
         </label>
         <input type="submit" class="send-message" value="送信" />
       </form>

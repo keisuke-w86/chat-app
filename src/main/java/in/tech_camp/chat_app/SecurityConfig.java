@@ -19,7 +19,7 @@ public class SecurityConfig {
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(authorizeRequests -> authorizeRequests
         //以下でログアウト状態でも実行できるGETリクエストを記述する
-        .requestMatchers("/css/**", "/users/sign_up", "/users/login","/error").permitAll()
+        .requestMatchers("/css/**", "/users/signUp", "/users/login","/error").permitAll()
         //以下でログアウト状態でも実行できるPOSTリクエストを記述する
         .requestMatchers(HttpMethod.POST, "/user").permitAll()
         //上記以外のリクエストは認証されたユーザーのみ許可される(要ログイン)
@@ -34,7 +34,7 @@ public class SecurityConfig {
         .defaultSuccessUrl("/", true)
         //ログイン失敗後のリダイレクト先
         .failureUrl("/login?error")
-        .usernameParameter("email")
+        .usernameParameter("userEmail")
         .permitAll())
 
       .logout(logout -> logout
