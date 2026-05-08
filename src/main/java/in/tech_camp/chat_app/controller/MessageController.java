@@ -1,22 +1,16 @@
 package in.tech_camp.chat_app.controller;
   
-  import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+  import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.multipart.MultipartFile;
 
 import in.tech_camp.chat_app.ImageUrl;
 import in.tech_camp.chat_app.custom_user.CustomUserDetail;
@@ -61,7 +55,7 @@ import lombok.AllArgsConstructor;
     }
 
     @PostMapping("/rooms/{roomId}/messages")
-    public String saveMessage(@PathVariable("roomId") Integer roomId, @ModelAttribute("messageForm") MessageForm messageForm, @AuthenticationPrincipal CustomUserDetail currentUser) {
+    /*public String saveMessage(@PathVariable("roomId") Integer roomId, @ModelAttribute("messageForm") MessageForm messageForm, @AuthenticationPrincipal CustomUserDetail currentUser) {
       MessageEntity message = new MessageEntity();
       message.setContent(messageForm.getContent());
 
@@ -76,7 +70,14 @@ import lombok.AllArgsConstructor;
       } catch (IOException e) {
         System.out.println("エラー：" + e);
         return "redirect:/rooms/" + roomId + "/messages";
-      }
+      }*/
+  public String saveMessage(@PathVariable("roomId") Integer roomId, @ModelAttribute("messageForm") MessageForm messageForm, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetail currentUser) {
+    messageForm.validateMessage(bindingResult);
+      MessageEntity message = new MessageEntity();
+      message.setContent(messageForm.getContent());
+
+    if (bindingResult.hasErrors()) {
+      return "redirect:/rooms/" + roomId + "/messages";
     }
   
       UserEntity user = userRepository.findById(currentUser.getId());
