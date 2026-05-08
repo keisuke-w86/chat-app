@@ -19,8 +19,8 @@ import in.tech_camp.chat_app.custom_user.CustomUserDetail;
 import in.tech_camp.chat_app.entity.RoomEntity;
 import in.tech_camp.chat_app.entity.RoomUserEntity;
 import in.tech_camp.chat_app.entity.UserEntity;
-import in.tech_camp.chat_app.form.EditForm;
 import in.tech_camp.chat_app.form.LoginForm;
+import in.tech_camp.chat_app.form.UserEditForm;
 import in.tech_camp.chat_app.form.UserForm;
 import in.tech_camp.chat_app.repository.RoomUserRepository;
 import in.tech_camp.chat_app.repository.UserRepository;
@@ -97,16 +97,16 @@ public class UserController {
     @GetMapping("/users/{userId}/edit")
     public String showEdit(@PathVariable("userId") Integer userId, Model model) {
         UserEntity user = userRepository.findById(userId);
-        EditForm editForm = new EditForm();
-        editForm.setId(user.getId());
-        editForm.setUsername(user.getUsername());
-        editForm.setUserEmail(user.getUserEmail());
-        model.addAttribute("user", editForm);
+        UserEditForm UserEditForm = new UserEditForm();
+        UserEditForm.setId(user.getId());
+        UserEditForm.setUsername(user.getUsername());
+        UserEditForm.setUserEmail(user.getUserEmail());
+        model.addAttribute("user", UserEditForm);
         return "users/edit";
     } 
          @PostMapping("/users/{userId}")
-    public String updateUser(@PathVariable("userId") Integer userId, @ModelAttribute("user") @Validated(ValidationOrder.class) EditForm editForm, BindingResult result, Model model) {
-      String newEmail = editForm.getUserEmail();
+    public String updateUser(@PathVariable("userId") Integer userId, @ModelAttribute("user") @Validated(ValidationOrder.class) UserEditForm UserEditForm, BindingResult result, Model model) {
+      String newEmail = UserEditForm.getUserEmail();
       if (userRepository.existsByEmailExcludingCurrent(newEmail, userId)) {
         result.rejectValue("userEmail", "error.user", "Email already exists");
       }
@@ -115,19 +115,19 @@ public class UserController {
                                       .map(DefaultMessageSourceResolvable::getDefaultMessage)
                                       .collect(Collectors.toList());
         model.addAttribute("errorMessages", errorMessages);
-        model.addAttribute("user", editForm);
+        model.addAttribute("user", UserEditForm);
         return "users/edit";
       }
       
       UserEntity user = userRepository.findById(userId);
-      user.setUsername(editForm.getUsername());
-      user.setUserEmail(editForm.getUserEmail());
+      user.setUsername(UserEditForm.getUsername());
+      user.setUserEmail(UserEditForm.getUserEmail());
   
       try {
         userRepository.update(user);
       } catch (Exception e) {
         System.out.println("エラー：" + e);
-        model.addAttribute("user", editForm);
+        model.addAttribute("user", UserEditForm);
         return "users/edit";
       }
   
